@@ -24,7 +24,17 @@ void Epoll::addFd(int fd, uint32_t op){
     ev.events   = op;
     errif( 
         epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &ev)==-1,
-        "epoll添加服务器错误!");
+        "epoll添加服务错误!");
+}
+void Epoll::modFd(int fd, uint32_t op){
+    struct epoll_event ev;
+    bzero(&ev, sizeof(ev));
+
+    ev.data.fd = fd;
+    ev.events = op;
+    errif( 
+        epoll_ctl(epfd, EPOLL_CTL_MOD, fd, &ev)==-1,
+        "epoll修改服务错误!");
 }
 
 std::vector<epoll_event> Epoll::poll(int timeout){

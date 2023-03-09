@@ -7,7 +7,7 @@
 #include <condition_variable>
 using namespace std;
 
-class ThreadPoll
+class ThreadPool
 {
 private:
 	vector<thread> work;			// 线程池
@@ -20,8 +20,8 @@ private:
 	void runinthread();		// 执行函数
 
 public:
-	ThreadPoll(unsigned int threadcnt);
-	~ThreadPoll();
+	ThreadPool(unsigned int threadcnt);
+	~ThreadPool();
 
 	void AddTask(function<void()>, bool pry = false);	// 添加任务
 	void GetInfo();			// 获取线程池的信息

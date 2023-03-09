@@ -2,31 +2,29 @@
 #include "Util.h"
 #include <unistd.h>
 #include <fcntl.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <string.h>
+#include <sys/types.h> 
+#include <sys/socket.h> 
+#include <arpa/inet.h> 
+#include <unistd.h> 
+#include <cstring>
 
-class InetAddress{
-public:
-    sockaddr_in6 addr;
-    socklen_t addr_len;
-
-    InetAddress(const char* ip, uint16_t port);
-    ~InetAddress();
-};
-
-class Socket
+class Sock
 {
-private:
-    int fd;
 public:
-    Socket();
-    ~Socket();
+    Sock(const char* ip, uint16_t port);    // 初始化
+    ~Sock();
 
-    void bind(InetAddress*);    // socket 绑定IP
-    void listen();              // 开始监听
-    int accept(InetAddress*);   // 接受客户端
+    void    online();           // 服务上线
+    int     start(sockaddr_in6 clnt_addr, socklen_t clnt_addr_len); // 服务运行
+
+    void    setnonblocking();   // 此socket设置为非阻塞模式
     
-    void setnonblocking();      // 设置为非阻塞socket
-    int getFd();                // 获取fd
+    int             fd;         // 获取标识符
+    sockaddr_in6    addr();     // 地址( 协议 + ip + port )
+    socklen_t       addr_len(); // 地址大小
+private:
+    void    iport(const char* ip, uint16_t port);
+
+    sockaddr_in6    _addr;       // 地址( 协议 + ip + port )
+    socklen_t       _addr_len;   // 地址大小
 };

@@ -8,19 +8,19 @@ void errif(bool, const char*);
 
 class LoadIni
 {
-private:
-    char ip[128];
-    int port=0;
-    long long blocksize=0;
-    int corepoolsize=0;
-
 public:
-    LoadIni(); // 初始化
+    LoadIni();  // 加载初始化文件
     ~LoadIni();
-    char* getip();
-    int getport();
-    long long getblocksize();
-    int getcorepoolsize();
+
+    char*       ip();
+    int         port();
+    long long   block();// 内存块最大大小(单个文件最大大小)
+    int         core(); // 线程数量
+private:
+    char        _ip[128];
+    int         _port=0;
+    long long   _block=0;
+    int         _core=0;
 };
 
 #endif
@@ -29,7 +29,6 @@ public:
 #ifndef UTIL_H:
     防止头文件的重复包含及编译
     if not define的简写
-
 #endif
     #ifndef
     ...

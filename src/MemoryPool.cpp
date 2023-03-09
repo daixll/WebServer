@@ -102,3 +102,9 @@ void MemoryPool::fast() {
 	getinfo();
 	return;
 }
+
+void MemoryPool::w2b(const char* file, char* data){
+    FILE* fp=NULL;
+    fp=fopen(file, "r");
+    fread(data, sizeof(char), 1000, fp);
+}

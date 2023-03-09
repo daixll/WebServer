@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <unordered_map>
 
@@ -28,4 +29,6 @@ public:
 	void sb(Block*);		// 还 内存块
 	void getinfo();			// 内存池信息
 	void fast();			// 优化空间
+
+    void w2b(const char* file, char* data); // 将文件中的内容写到内存块中
 };

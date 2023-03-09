@@ -1,15 +1,15 @@
 #include "ThreadPool.h"
 
-ThreadPoll::ThreadPoll(unsigned int threadcnt){
+ThreadPool::ThreadPool(unsigned int threadcnt){
 	threadcnt = min(threadcnt, thread::hardware_concurrency());	// 不能超过最大线程
 	run = true;
 	for (unsigned int i = 0; i < threadcnt; i++)
 		work.emplace_back(
-			thread( std::bind(&ThreadPoll::runinthread, this) )
+			thread( std::bind(&ThreadPool::runinthread, this) )
 		);
 }
 
-ThreadPoll::~ThreadPoll() {
+ThreadPool::~ThreadPool() {
 	{
 		lock_guard<mutex> lock(mtx);	// ?
 		run = 1;
@@ -20,7 +20,7 @@ ThreadPoll::~ThreadPoll() {
 			w.join();
 }
 
-void ThreadPoll::runinthread() {
+void ThreadPool::runinthread() {
 	while (run) {
 		unique_lock<mutex> lock(mtx);		// ?
 		while (task.size() == 0 && run) 
@@ -35,7 +35,7 @@ void ThreadPoll::runinthread() {
 	}
 }
 
-void ThreadPoll::AddTask(function<void()> f, bool pry) {
+void ThreadPool::AddTask(function<void()> f, bool pry) {
 	{
 		unique_lock<mutex> lock(mtx);
 		if (!run) {
