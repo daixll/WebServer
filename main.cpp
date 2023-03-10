@@ -32,20 +32,21 @@ void sendyw(int fd){
     //char URL[200]="./html";
     //for(int i=0; url[i]; i++) URL[i+6]=url[i];
 
-    printf("正常读取\n");
-
-    fp=fopen("html/index.html", "r");
+    fp=fopen("./html/index.html", "r");
     char text[1024];
     memset(text, '\0', sizeof text);
     fread(text, sizeof(char), 1000, fp);
-    
-    
-
     strcat(response, text);
-    send(fd, response, strlen(response), 0);
-    close(fd);
-}
 
+    printf("发送内容：\n%s\n", response);
+
+    
+    send(fd, response, strlen(response), 0);
+    
+    close(fd);
+    printf("关闭连接\n");
+    return ;
+}
 
 int main(){
     LoadIni* ini = new LoadIni();
@@ -74,13 +75,14 @@ int main(){
                 ep->addFd(clnt->fd, EPOLLIN | EPOLLET);
             }
             else if(events[i].events & EPOLLIN){
-                printf("读取\n");
+                printf("读取请求\n");
 
-                /*
+                
                 char buf[1024];
                 while(1){    //由于使用非阻塞IO，读取客户端buffer，一次读取buf大小数据，直到全部读取完毕
                     bzero(&buf, sizeof(buf));
                     ssize_t bytes_read = read(events[i].data.fd, buf, sizeof(buf));
+                    
                     if(bytes_read > 0){
                         printf("message from client fd %d: %s\n", events[i].data.fd, buf);
                         //write(events[i].data.fd, buf, sizeof(buf));
@@ -89,26 +91,25 @@ int main(){
                         continue;
                     } else if(bytes_read == -1 && ((errno == EAGAIN) || (errno == EWOULDBLOCK))){//非阻塞IO，这个条件表示数据全部读取完毕
                         printf("finish reading once, errno: %d\n", errno);
+                        ep->modFd(events[i].data.fd, EPOLLOUT | EPOLLET);
                         //close(events[i].data.fd);   //关闭socket会自动将文件描述符从epoll树上移除
                         break;
                     } else if(bytes_read == 0){  //EOF，客户端断开连接
                         printf("EOF, client fd %d disconnected\n", events[i].data.fd);
-                        ep->modFd(events[i].data.fd, EPOLLOUT | EPOLLET);
-                        //close(events[i].data.fd);   //关闭socket会自动将文件描述符从epoll树上移除
+                        //ep->modFd(events[i].data.fd, EPOLLOUT | EPOLLET);
+                        close(events[i].data.fd);   //关闭socket会自动将文件描述符从epoll树上移除
                         break;
                     }
                 }
-                */
-
-                ep->modFd(events[i].data.fd, EPOLLOUT | EPOLLET);
+                
+                //ep->modFd(events[i].data.fd, EPOLLOUT | EPOLLET);
             }
             else if(events[i].events & EPOLLOUT){
-
-                printf("开始发送！");
-
                 int fd = events[i].data.fd; 
                 function<void()> f = std::bind(sendyw, fd);
                 tp -> AddTask(f);
+                
+                
                 //close(events[i].data.fd);
 
                 // 文件 业务
