@@ -1,5 +1,6 @@
 #pragma once
 #include "Util.h"
+#include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/types.h> 

@@ -13,7 +13,7 @@ Epoll::~Epoll(){
         close(epfd);
         epfd = -1;
     }
-    delete [] events;
+    delete events;
 }
 
 void Epoll::addFd(int fd, uint32_t op){
