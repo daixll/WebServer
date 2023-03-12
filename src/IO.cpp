@@ -39,8 +39,7 @@ void dealsend(int fd){
     fread(text, sizeof(char),1000, fp);strcat(response,text);
     printf("发送内容:\n%s\n", response);
     
-    
     send(fd, response,strlen(response), 0);
-
+    printf("%d发送成功!", fd);
     return ;
 }

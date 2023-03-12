@@ -16,7 +16,7 @@ int main(){
     serv->online();                         // 服务器上线
 
     while(1){
-        std::vector<epoll_event> events = ep->poll(-1);    // 就绪事件
+        std::vector<epoll_event> events = ep->poll(0);    // 就绪事件
         for(int i=0; i<events.size(); i++)
             if(events[i].data.fd == serv->fd){  // 新的事件
                 Sock* clnt = new Sock("", 0);
