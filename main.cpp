@@ -16,24 +16,25 @@ int main(){
     serv->online();                         // 服务器上线
 
     while(1){
-        std::vector<epoll_event> events = ep->poll(0);    // 就绪事件
+        std::vector<epoll_event> events = ep->poll(-1);    // 就绪事件
+        
         for(int i=0; i<events.size(); i++)
             if(events[i].data.fd == serv->fd){  // 新的事件
                 Sock* clnt = new Sock("", 0);
                 clnt->fd = serv->start(clnt->addr(), clnt->addr_len());
                 clnt->setnonblocking();
 
-                printf("新的连接: %d\n", clnt->fd);
+                printf("新的连接%d:  ", clnt->fd);
 
                 ep->addFd(clnt->fd, EPOLLIN | EPOLLET);
             }
             else if(events[i].events & EPOLLIN){// 可读事件
-                dealrecv(events[i].data.fd);
-                ep->modFd(events[i].data.fd, EPOLLOUT | EPOLLET);
+                function<void()> f = std::bind(dealrecv, (int)events[i].data.fd, ep, mp);
+                tp -> AddTask(f);
             }
             else if(events[i].events & EPOLLOUT){// 可写事件
-                dealsend(events[i].data.fd);
-                close(events[i].data.fd);
+                function<void()> f = std::bind(dealsend, (int)events[i].data.fd, ep, mp);
+                tp -> AddTask(f);
             }
     }    
 
