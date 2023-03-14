@@ -1,3 +1,4 @@
+#pragma once
 #include "Socket.h"
 #include "Epoll.h"
 #include "MemoryPool.h"

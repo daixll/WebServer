@@ -56,6 +56,8 @@ Block* MemoryPool::nb(ull size) {
 		Bmap[size]->p = Bmap[size]->p->next;
 	Bmap[size]->live++;		// 活跃的增加
 	Bmap[size]->p->st = 1;	// 标记使用
+
+	memset(Bmap[size]->p->data, '\0', Bmap[size]->p->size);
 	return Bmap[size]->p;
 }
 
