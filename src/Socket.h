@@ -1,31 +1,32 @@
 #pragma once
 #include "Util.h"
-#include <errno.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/types.h> 
-#include <sys/socket.h> 
-#include <arpa/inet.h> 
-#include <unistd.h> 
-#include <cstring>
+#include <string.h>     // memset()
+#include <arpa/inet.h>  // ip套件
+#include <sys/socket.h> // socket套件
+#include <sys/types.h>  // 类型转换套件
+#include <fcntl.h>      // 设置非阻塞
+#include <unistd.h>     // close()
 
-class Sock
+class Socket
 {
 public:
-    Sock(const char* ip, uint16_t port);    // 初始化
-    ~Sock();
+    Socket(char IPV=6, std::string ip="[::]", int port=80);
+    ~Socket();
 
-    void    online();           // 服务上线
-    int     start(sockaddr_in6 clnt_addr, socklen_t clnt_addr_len); // 服务运行
+    void setnonblocking();  // 此socket设置为非阻塞模式
+    void socket6(const char* ip, uint16_t port);    // ipv6 socket
+    void socket4(const char* ip, uint16_t port);    // ipv4 socket
+    void online();          // 服务器上线运行
+    int  ac6(sockaddr_in6 clntaddr, socklen_t clntaddrlen); // 接受一个ipv6连接
+    int  ac4(sockaddr_in clntaddr, socklen_t clntaddrlen);  // 接受一个ipv4连接
 
-    void    setnonblocking();   // 此socket设置为非阻塞模式
-    
-    int             fd;         // 获取标识符
-    sockaddr_in6    addr();     // 地址( 协议 + ip + port )
-    socklen_t       addr_len(); // 地址大小
+    int fd;     // servfd
+    sockaddr_in     addr4();   
+    sockaddr_in6    addr6();
+    socklen_t       addrlen();
 private:
-    void    iport(const char* ip, uint16_t port);
-
-    sockaddr_in6    _addr;       // 地址( 协议 + ip + port )
-    socklen_t       _addr_len;   // 地址大小
+    char            _IPV;       // 这个Socket的版本
+    sockaddr_in     _addr4;
+    sockaddr_in6    _addr6;     // 地址( 协议 + ip + port )
+    socklen_t       _addrlen;   // 地址大小
 };

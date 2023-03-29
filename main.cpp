@@ -1,47 +1,46 @@
+#include "src/Util.h"
 #include "src/Socket.h"
-#include "src/MemoryPool.h"
 #include "src/Epoll.h"
+#include "src/MemoryPool.h"
+#include "src/Channel.h"
 #include "src/ThreadPool.h"
-#include "src/IO.h"
+#include "src/Connection.h"
 
 int main(){
-    LoadIni*    ini     = new LoadIni();                    // 获取配置文件
-    Sock*       serv    = new Sock(ini->ip(), ini->port()); // socket
+    Socket*     serv    = new Socket();                     // socket
     Epoll*      ep      = new Epoll();                      // IO复用
-    ThreadPool* tp      = new ThreadPool(ini->core());      // 线程池
-    MemoryPool* mp      = new MemoryPool(ini->block());     // 内存池
-    
-    serv->setnonblocking();                 // 服务器 socket 改为非阻塞
-    ep->addFd(serv->fd, EPOLLIN | EPOLLET); // 将此socket 添加到epoll
-    serv->online();                         // 服务器上线
+    ThreadPool* tp      = new ThreadPool(3);      // 线程池
+    MemoryPool* mp      = new MemoryPool((long long)2*1024*1024*1024);
 
-    while(1){
-        std::vector<epoll_event> events = ep->poll(-1);    // 就绪事件
+    serv->setnonblocking();                     // 设置为非阻塞IO
+    ep->addFd(serv->fd, EPOLLIN | EPOLLET);   // 将此socket 添加到epoll
+    serv->online();                             // 服务器上线
+
+    while(true){
+        std::vector<Channel*> events = ep->poll(-1, mp);    // 就绪事件
         
         for(int i=0; i<events.size(); i++)
-            if(events[i].data.fd == serv->fd){  // 新的事件
-                Sock* clnt = new Sock("", 0);
-                clnt->fd = serv->start(clnt->addr(), clnt->addr_len());
-                clnt->setnonblocking();
+            if(events[i]->ev.data.fd == serv->fd){  // 新的事件
+                
+                int clnt = socket(AF_INET6, SOCK_STREAM, 0);    // 创建套接字
+                sockaddr_in6 addr; int addr_len = sizeof addr;  // ip相关
+                clnt = serv->ac6(addr, addr_len);
+                fcntl(clnt, F_SETFL, fcntl(clnt, F_GETFL) | O_NONBLOCK);
 
-                printf("新的连接%d:  ", clnt->fd);
+                printf("\n新的连接%d |", clnt);
 
-                ep->addFd(clnt->fd, EPOLLIN | EPOLLET);
+                Channel* c = new Channel(clnt, ep, mp);
+                ep->addFd(clnt, EPOLLIN | EPOLLET);
             }
-            else if(events[i].events & EPOLLIN){// 可读事件
-                function<void()> f = std::bind(dealrecv, (int)events[i].data.fd, ep, mp);
-                tp -> AddTask(f);
+            else if(events[i]->ev.events & EPOLLIN){// 可读事件
+                //function<void()> f = std::bind(dealrecv, (int)events[i]->ev.data.fd, ep);
+                //tp -> AddTask(f);
             }
-            else if(events[i].events & EPOLLOUT){// 可写事件
-                function<void()> f = std::bind(dealsend, (int)events[i].data.fd, ep, mp);
-                tp -> AddTask(f);
+            else if(events[i]->ev.events & EPOLLOUT){// 可写事件
+                //function<void()> f = std::bind(dealsend, (int)events[i]->ev.data.fd, ep);
+                //tp -> AddTask(f);
             }
     }    
 
-    delete ini;
-    delete serv;
-    delete ep;
-    delete tp;
-    delete mp;
     return 0;
 }

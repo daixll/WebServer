@@ -1,36 +1,27 @@
-#ifndef UTIL_H
-#define UTIL_H
+#pragma once
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <sstream>
 
-#include <stdio.h>
-#include <stdlib.h>
+// 发生错误
+void err(bool flg, std::string msg);
+// 警告信息
+bool war(bool flg, std::string msg);
 
-void errif(bool, const char*);
+// i2s
+std::string i2s(long long num);
 
+// 读取filename文件, 内容存在res中, 返回读取的大小
+long long readfile(const std::string filename, std::string& res);
+
+// 获取服务器配置信息
 class LoadIni
 {
 public:
-    LoadIni();  // 加载初始化文件
+    LoadIni(std::string filename="serv.ini");  // 加载初始化文件
     ~LoadIni();
 
-    char*       ip();
-    int         port();
-    long long   block();// 内存块最大大小(单个文件最大大小)
-    int         core(); // 线程数量
 private:
-    char        _ip[128];
-    int         _port=0;
-    long long   _block=0;
-    int         _core=0;
+    
 };
-
-#endif
-
-/*
-#ifndef UTIL_H:
-    防止头文件的重复包含及编译
-    if not define的简写
-#endif
-    #ifndef
-    ...
-    #endif
-*/
