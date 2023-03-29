@@ -2,7 +2,9 @@
 #include "Util.h"
 #include "Socket.h"
 #include "Epoll.h"
-#include "chrono"
+#include "Channel.h"
 
-void dealrecv(int fd, Epoll* ep);
-void dealsend(int fd, Epoll* ep);
+void conn(Channel* ch);
+
+void dealrecv(Channel* ch);
+void dealsend(Channel* ch);

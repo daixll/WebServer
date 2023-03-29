@@ -18,7 +18,7 @@ long long readfile(const std::string filename, std::string& res);
 // 获取服务器配置信息
 class LoadIni
 {
-public:
+public: // 还没写！！！
     LoadIni(std::string filename="serv.ini");  // 加载初始化文件
     ~LoadIni();
 

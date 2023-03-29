@@ -1,11 +1,41 @@
 #include "src/Util.h"
-#include "src/Socket.h"
-#include "src/Epoll.h"
 #include "src/MemoryPool.h"
-#include "src/Channel.h"
+#include "src/Acceptor.h"
+#include "src/Epoll.h"
 #include "src/ThreadPool.h"
-#include "src/Connection.h"
+#include "src/Socket.h"
 
+int main(){
+    LoadIni*    ini = new LoadIni();
+    MemoryPool* mp  = new MemoryPool();
+    Epoll*      ep  = new Epoll(mp);
+    ThreadPool* tp  = new ThreadPool(3);
+    Acceptor*   ac  = new Acceptor();
+    // 服务器socket
+    Socket*     servsock = new Socket();
+    servsock->setnonblocking();
+    // 服务器Channel
+    Channel*    servch = new Channel(servsock->fd, ep, mp);
+    servch->setevents(EPOLLET | EPOLLIN);
+    // 服务器上线 开始监听
+    servsock -> online();
+
+    //Acceptor* ac = new Acceptor(servch, -1);
+    while(true){
+        // 处理连接
+        std::vector<Channel*> events = ac->poll(servch, -1);
+        
+        // 发送给 SubReactor Connection
+        for(auto ch: events){
+            function<void()> f = std::bind(dealrecv, (int)events[i]->ev.data.fd, ep);
+            tp -> AddTask(f);
+        }        
+    }
+
+    return 0;
+}
+
+/*
 int main(){
     Socket*     serv    = new Socket();                     // socket
     Epoll*      ep      = new Epoll();                      // IO复用
@@ -44,3 +74,4 @@ int main(){
 
     return 0;
 }
+*/

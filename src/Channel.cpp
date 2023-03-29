@@ -5,15 +5,24 @@ Channel::Channel(int fd, Epoll* ep, MemoryPool* mp){
 }
 Channel::~Channel(){}
 
-void Channel::needsend(std::string& file){
-    buf = _mp->nb(file.size());
-    strcpy(buf->data, file.c_str());
-    _ep->modFd(_fd, EPOLLOUT | EPOLLET);
+// fd
+int Channel::fd(){
+    return _fd;
 }
-
-char* Channel::sendfile(int size){
-    char* res;
-    strncpy(res, (buf->data)+last, size);
-    last+=size;
-    return res;
+Epoll* Channel::ep(){
+    return _ep;
+}
+// events
+uint32_t Channel::events(){
+    return _events;
+}
+void Channel::setevents(uint32_t ev){
+    _events=ev;
+}
+// inepoll
+bool Channel::inepoll(){
+    return _inep;
+}
+void Channel::setinepoll(bool st){
+    _inep = st;
 }

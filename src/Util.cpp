@@ -43,3 +43,10 @@ long long readfile(const std::string filename, std::string& res){
     ifs.close();
     return filesize;
 }
+
+LoadIni::LoadIni(std::string filename){
+
+}
+LoadIni::~LoadIni(){
+
+}

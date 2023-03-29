@@ -24,7 +24,7 @@ private:
 	std::unordered_map<ull, BlockInfo*> Bmap;	// 内存信息一览表
 	ull to2(ull size);		// 转换为2的幂
 public:
-	MemoryPool(ull size);	// 内存池允许的单个文件最大大小
+	MemoryPool(ull size=2*1024*1024);	// 内存池允许的单个文件最大大小
 	~MemoryPool();
 	Block* nb(ull size);	// 拿 内存块
 	void sb(Block*);		// 还 内存块

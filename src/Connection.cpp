@@ -1,5 +1,26 @@
 #include "Connection.h"
 
+void conn(Channel* ch){
+
+    
+
+
+}
+
+void dealrecv(Channel* ch){
+    // 读取
+
+
+}
+
+void dealsend(Channel* ch){
+    // 发送
+
+
+}
+
+
+/*
 std::string fenxi(char* buf){
     std::string res;
     int i=0;    // 解析第一行
@@ -11,6 +32,8 @@ std::string fenxi(char* buf){
     
     return res;
 }
+*/
+
 
 /*
 void dealsend(int fd, std::string filename){

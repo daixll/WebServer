@@ -7,20 +7,22 @@
 #include <string.h>
 #include <sys/epoll.h>
 
+class Channel;
+
 class Epoll
 {
-private:
-    int epfd;               
-    epoll_event* events;
 public:
-    Epoll();
+    Epoll(MemoryPool* mp);
     ~Epoll();
 
     // 添加事件到epoll
-    void addFd(int fd, uint32_t op);
-    // 修改事件到epoll
-    void modFd(int fd, uint32_t op);
+    void addfd(int fd, uint32_t op);
+    // 更新事件到epoll
+    void updatech(Channel* ch);
     // 获取内核事件表
-    std::vector<Channel*> Epoll::poll(int timeout, MemoryPool* mp);
-    //std::vector<std::pair<epoll_event>> poll(int timeout=-1);
+    std::vector<Channel*> poll(int timeout);
+private:
+    MemoryPool* _mp; // 与之对应的内存池
+    int epfd = -1;               
+    epoll_event* events = NULL; // 事件表
 };
