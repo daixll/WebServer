@@ -20,16 +20,19 @@ int main(){
     // 服务器上线 开始监听
     servsock -> online();
 
-    //Acceptor* ac = new Acceptor(servch, -1);
     while(true){
         // 处理连接
         std::vector<Channel*> events = ac->poll(servch, -1);
         
-        // 发送给 SubReactor Connection
-        for(auto ch: events){
-            function<void()> f = std::bind(dealrecv, (int)events[i]->ev.data.fd, ep);
-            tp -> AddTask(f);
-        }        
+        if(events[i]->ev.events & EPOLLIN){// 可读事件
+            //function<void()> f = std::bind(dealrecv, (int)events[i]->ev.data.fd, ep);
+            //tp -> AddTask(f);
+        }
+        else if(events[i]->ev.events & EPOLLOUT){// 可写事件
+                //function<void()> f = std::bind(dealsend, (int)events[i]->ev.data.fd, ep);
+                //tp -> AddTask(f);
+        }
+              
     }
 
     return 0;

@@ -1,0 +1,1 @@
+g++ -g -std=c++20 src/Util.cpp src/Socket.cpp src/Epoll.cpp src/ThreadPool.cpp src/Acceptor.cpp src/Connection.cpp main.cpp -o WebServer
